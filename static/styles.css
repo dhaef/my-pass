@@ -1,0 +1,107 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: inherit;
+}
+
+body {
+  --text-color: #222;
+  --bkg-color: #fff;
+  --anchor-color: #0033cc;
+  --secondary-bkg-color: #d6d6d6;
+  color: var(--text-color);
+  background: var(--bkg-color);
+
+  box-sizing: border-box;
+}
+
+body.dark-theme {
+  --text-color: #eee;
+  --bkg-color: #2e2e2e;
+  --secondary-bkg-color: #383838;
+  --anchor-color: #809fff;
+}
+
+.nav {
+  padding: 1rem;
+  background-color: var(--secondary-bkg-color);
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.wrapper {
+  margin: 1rem;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 0.5rem 0 0.25rem 0;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+input {
+  padding: 0.75rem 0.5rem;
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  margin: 0.25rem 0 0.5rem 0;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+.link-button {
+  text-decoration: none;
+  color: black;
+  border: 1px solid #000;
+  display: inline-block;
+  text-align: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2.5px;
+  font-size: 13.3333px;
+}
+
+.pass {
+  color: black;
+  border-radius: 8px;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background-color: #f0f0f0;
+}
+
+.pass-item {
+  width: 100%;
+}
+
+.logout:hover {
+  cursor: pointer;
+}
+
+.multi-container {
+  display: flex;
+  align-items: center;
+}
+
+.multi-container > input {
+  margin: 0.5rem 0;
+}
+
+.multi-container > button {
+  padding: 0.8rem;
+  margin-left: 0.5rem;
+}

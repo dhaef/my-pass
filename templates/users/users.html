@@ -1,0 +1,5 @@
+{{ define "title" }}Users{{end}} {{ define "scripts" }}{{end}} {{define "body"}}
+<h1>Users</h1>
+{{ range .Data.users }}
+<p>{{ .Email }}</p>
+{{ end }} {{end}}

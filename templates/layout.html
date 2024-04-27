@@ -1,0 +1,25 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ template "title" . }}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    {{ template "scripts" }}
+  </head>
+  <body>
+    <div class="nav">
+      <p hx-post="/logout" hx-swap="none" class="logout">Logout</p>
+      <a class="nav-item" href="/passes">passes</a>
+      <a class="nav-item" href="/passes/create">create pass</a>
+      <button class="btn-toggle">Switch theme</button>
+    </div>
+
+    <div class="wrapper">{{ template "body" . }}</div>
+
+    <script src="/static/theme.js"></script>
+  </body>
+</html>
+{{ end }}

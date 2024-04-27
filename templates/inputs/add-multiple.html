@@ -1,0 +1,10 @@
+<div id="{{.Data.type}}-{{.Data.id}}" class="multi-container">
+  <input type="text" name="{{.Data.type}}-{{.Data.id}}" />
+  <button
+    hx-get="/inputs/{{.Data.type}}"
+    hx-target="#{{.Data.type}}-{{.Data.id}}"
+    hx-swap="delete"
+  >
+    -
+  </button>
+</div>

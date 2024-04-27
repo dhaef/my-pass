@@ -1,0 +1,95 @@
+{{ define "title" }}Create Pass{{end}} {{ define "scripts" }}{{end}} {{define
+"body"}}
+<h1>{{ if .Data.pass.Id }}Edit{{else}}New{{end}} Pass</h1>
+<form
+  hx-post="{{ if .Data.pass.Id }}/passes/update/{{.Data.pass.Id}}{{else}}/passes/create{{end}}"
+>
+  <div class="pass-item">
+    <label for="name">Name:</label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      value="{{ .Data.pass.Name.String }}"
+    />
+  </div>
+
+  <div class="pass-item">
+    <label for="username">Username:</label>
+    <input
+      type="text"
+      id="username"
+      name="username"
+      value="{{ .Data.pass.Username.String }}"
+    />
+  </div>
+
+  <div class="pass-item">
+    <label for="password">Password:</label>
+    <input
+      type="text"
+      id="password"
+      name="password"
+      value="{{ .Data.pass.Password.String }}"
+    />
+  </div>
+
+  <div class="pass-item">
+    <label for="websites">Websites:</label>
+    <div id="websites">
+      {{ range .Data.pass.Websites }}
+      <div id="website-{{.Id.String}}" class="multi-container">
+        <input
+          type="text"
+          name="website-{{.Id.String}}"
+          value="{{ .Value.String }}"
+        />
+        <button
+          hx-get="/inputs/website"
+          hx-target="#website-{{.Id.String}}"
+          hx-swap="delete"
+        >
+          -
+        </button>
+      </div>
+      {{ end }}
+    </div>
+    <button hx-get="/inputs/website" hx-target="#websites" hx-swap="afterend">
+      Add
+    </button>
+  </div>
+
+  <div class="pass-item">
+    <label for="tags">Tags:</label>
+    <div id="tags">
+      {{ range .Data.pass.Tags }}
+      <div id="tag-{{.Id.String}}" class="multi-container">
+        <input
+          type="text"
+          name="tag-{{.Id.String}}"
+          value="{{ .Value.String }}"
+        />
+        <button
+          hx-get="/inputs/tag"
+          hx-target="#tag-{{.Id.String}}"
+          hx-swap="delete"
+        >
+          -
+        </button>
+      </div>
+      {{ end }}
+    </div>
+    <button hx-get="/inputs/tag" hx-target="#tags" hx-swap="afterend">
+      Add
+    </button>
+  </div>
+
+  <div style="margin: 1rem 0">
+    <a href="/passes"><button>Cancel</button></a>
+    <button type="submit">
+      {{ if .Data.pass.Id }}Save{{else}}Create{{end}}
+    </button>
+  </div>
+</form>
+
+{{end}}

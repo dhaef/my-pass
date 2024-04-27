@@ -1,0 +1,11 @@
+{{ define "title" }}Passes{{end}} {{ define "scripts" }}{{end}} {{define
+"body"}}
+<h1>Passes</h1>
+{{ range .Data.passes }}
+<a href="/passes/{{.Id}}" style="text-decoration: none">
+  <div class="pass">
+    <h3>{{ if .Name.String }}{{ .Name.String }}{{else}}Untitled{{end}}</h3>
+    <p>{{ .Username.String }}</p>
+  </div>
+</a>
+{{ end }} {{end}}
