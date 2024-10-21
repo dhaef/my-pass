@@ -29,6 +29,7 @@ func buildRoutes() http.Handler {
 	r.HandleFunc("GET /sign-up", c.MakeHandler(c.SignUpHtml))
 	r.HandleFunc("POST /api/sign-up", c.MakeHandler(c.SignUpJson))
 	r.HandleFunc("GET /not-found", c.MakeHandler(c.NotFoundHtml))
+	r.HandleFunc("GET /job", c.MakeHandler(c.SubmitJob))
 
 	return r
 }

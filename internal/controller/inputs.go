@@ -7,12 +7,12 @@ import (
 )
 
 func AddMultipleInputHtml(w http.ResponseWriter, r *http.Request) error {
-	id := uuid.New()
+	id := uuid.NewString()
 	inputType := r.PathValue("type")
 	return render(
 		w,
-		base[map[string]any]{
-			Data: map[string]any{
+		Base{
+			Data: map[string]string{
 				"id":   id,
 				"type": inputType,
 			},

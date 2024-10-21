@@ -21,7 +21,7 @@ func GetDB() *sql.DB {
 
 func Connect() {
 	var err error
-	db, err = sql.Open("postgres", "user=postgres dbname=postgres password=example host=localhost port=5432 sslmode=disable")
+	db, err = sql.Open("postgres", "user=my-pass-go dbname=my-pass-go password=example host=localhost port=5432 sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}

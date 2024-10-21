@@ -18,8 +18,8 @@ type key string
 const sessionCookieName = "sessionId"
 const userIdKeyName key = "userId"
 
-type base[T map[string]any] struct {
-	Data T
+type Base struct {
+	Data any
 }
 
 func buildTemplatePaths(files []string) []string {
@@ -44,12 +44,12 @@ func handleTemplateFiles(files []string) (*template.Template, error) {
 	return template.ParseFiles(filesWithFullPath...)
 }
 
-func render(w http.ResponseWriter, data base[map[string]any], files []string) error {
+func render(w http.ResponseWriter, data any, files []string) error {
 	t, _ := handleTemplateFiles(files)
 	return t.Execute(w, data)
 
 }
-func renderTemplate(w http.ResponseWriter, data base[map[string]any], name string, files []string) error {
+func renderTemplate(w http.ResponseWriter, data any, name string, files []string) error {
 	t, _ := handleTemplateFiles(files)
 	return t.ExecuteTemplate(w, name, data)
 }
@@ -95,7 +95,7 @@ func MakeHandler(h apiFunc) http.HandlerFunc {
 					return
 				}
 
-				renderTemplate(w, base[map[string]any]{Data: map[string]any{}}, "layout", []string{"not-found.html", "layout.html"})
+				renderTemplate(w, "", "layout", []string{"not-found.html", "layout.html"})
 			}
 		}
 

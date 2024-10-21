@@ -15,6 +15,7 @@ services:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_PASSWORD: example
+      POSTGRES_USER: my-pass-go
     ports:
       - 5432:5432
 

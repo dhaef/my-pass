@@ -22,7 +22,7 @@ func PassHtml(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	return renderTemplate(w, base[map[string]any]{
+	return renderTemplate(w, Base{
 		Data: map[string]any{
 			"pass": pass,
 		},
@@ -41,7 +41,7 @@ func PassesHtml(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// log.Printf("%+v\n", passes)
-	return renderTemplate(w, base[map[string]any]{
+	return renderTemplate(w, Base{
 		Data: map[string]any{
 			"passes": passes,
 		},
@@ -60,7 +60,7 @@ func CreatePassHtml(w http.ResponseWriter, r *http.Request) error {
 
 	return renderTemplate(
 		w,
-		base[map[string]any]{
+		Base{
 			Data: map[string]any{
 				"pass": pass,
 			},

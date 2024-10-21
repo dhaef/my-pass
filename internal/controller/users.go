@@ -38,7 +38,7 @@ func UsersHtml(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	return renderTemplate(w, base[map[string]any]{
+	return renderTemplate(w, Base{
 		Data: map[string]any{
 			"users": users,
 		},

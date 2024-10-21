@@ -4,19 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dhaef/my-pass/internal/jobs"
 	"github.com/dhaef/my-pass/internal/model"
+	"github.com/google/uuid"
 )
 
 func LoginHtml(w http.ResponseWriter, r *http.Request) error {
-	return render(w, base[map[string]any]{Data: nil}, []string{"login.html"})
+	return render(w, "", []string{"login.html"})
 }
 
 func SignUpHtml(w http.ResponseWriter, r *http.Request) error {
-	return render(w, base[map[string]any]{Data: nil}, []string{"sign-up.html"})
+	return render(w, "", []string{"sign-up.html"})
 }
 
 func NotFoundHtml(w http.ResponseWriter, r *http.Request) error {
-	return renderTemplate(w, base[map[string]any]{Data: nil}, "layout", []string{"layout.html", "not-found.html"})
+	return renderTemplate(w, "", "layout", []string{"layout.html", "not-found.html"})
 }
 
 func LogoutRedirect(w http.ResponseWriter, r *http.Request) error {
@@ -129,4 +131,19 @@ func SignUpJson(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return handleCreateSessionAndSetCookie(w, r, userId)
+}
+
+func SubmitJob(w http.ResponseWriter, r *http.Request) error {
+	jobsChan := r.Context().Value("jobsChan").(chan jobs.Job)
+
+	jobsChan <- jobs.Job{
+		Id: uuid.NewString(),
+		Handler: func(data map[string]string) (string, error) {
+			return data["test"], nil
+		},
+		Data: map[string]string{"test": "this is a test map"},
+	}
+
+	w.WriteHeader(http.StatusOK)
+	return nil
 }
