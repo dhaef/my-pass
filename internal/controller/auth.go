@@ -38,7 +38,8 @@ func LogoutRedirect(w http.ResponseWriter, r *http.Request) error {
 
 	http.SetCookie(w, &newCookie)
 
-	err = model.InvalidateUserSession(cookie.Value)
+	db := model.GetDBFromCtx(r)
+	err = db.InvalidateUserSession(cookie.Value)
 	if err != nil {
 		log.Println(err)
 	}
@@ -73,7 +74,8 @@ func getAuthAndValidate(r *http.Request) (Auth, error) {
 }
 
 func handleCreateSessionAndSetCookie(w http.ResponseWriter, r *http.Request, userId string) error {
-	sessionId, err := model.CreateUserSession(userId)
+	db := model.GetDBFromCtx(r)
+	sessionId, err := db.CreateUserSession(userId)
 	if err != nil {
 		return APIError{
 			Status:       http.StatusBadRequest,
@@ -92,7 +94,8 @@ func LoginJson(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	userId, err := model.AuthenticateUser(auth.Email, auth.Password)
+	db := model.GetDBFromCtx(r)
+	userId, err := db.AuthenticateUser(auth.Email, auth.Password)
 	if err != nil {
 		return APIError{
 			Status:       http.StatusUnauthorized,
@@ -121,7 +124,8 @@ func SignUpJson(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	userId, err := model.UpdateUserPassword(auth.Email, auth.Password)
+	db := model.GetDBFromCtx(r)
+	userId, err := db.UpdateUserPassword(auth.Email, auth.Password)
 	if err != nil {
 		return APIError{
 			Status:       http.StatusBadRequest,

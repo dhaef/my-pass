@@ -13,7 +13,8 @@ func PassHtml(w http.ResponseWriter, r *http.Request) error {
 	userId := r.Context().Value(userIdKeyName).(string)
 	id := r.PathValue("id")
 
-	pass, err := model.GetPass(id, userId)
+	db := model.GetDBFromCtx(r)
+	pass, err := db.GetPass(id, userId)
 	if err != nil {
 		log.Println(err)
 		return APIError{
@@ -30,8 +31,10 @@ func PassHtml(w http.ResponseWriter, r *http.Request) error {
 }
 
 func PassesHtml(w http.ResponseWriter, r *http.Request) error {
+	db := model.GetDBFromCtx(r)
+
 	userId := r.Context().Value(userIdKeyName).(string)
-	passes, err := model.GetPasses(userId)
+	passes, err := db.GetPasses(userId)
 	if err != nil {
 		log.Println(err)
 		return APIError{
@@ -49,10 +52,11 @@ func PassesHtml(w http.ResponseWriter, r *http.Request) error {
 }
 
 func CreatePassHtml(w http.ResponseWriter, r *http.Request) error {
+	db := model.GetDBFromCtx(r)
 	userId := r.Context().Value(userIdKeyName).(string)
 	id := r.PathValue("id")
 
-	pass, err := model.GetPass(id, userId)
+	pass, err := db.GetPass(id, userId)
 	if err != nil {
 		log.Println(err)
 		log.Println(pass)
@@ -129,7 +133,8 @@ func getPassFromForm(r *http.Request) *model.Pass {
 func CreatePass(w http.ResponseWriter, r *http.Request) error {
 	pass := getPassFromForm(r)
 
-	pass, err := model.CreatePass(pass)
+	db := model.GetDBFromCtx(r)
+	pass, err := db.CreatePass(pass)
 	if err != nil {
 		log.Println(err)
 	}
@@ -139,11 +144,12 @@ func CreatePass(w http.ResponseWriter, r *http.Request) error {
 }
 
 func UpdatePass(w http.ResponseWriter, r *http.Request) error {
+	db := model.GetDBFromCtx(r)
 	pass := getPassFromForm(r)
 	id := r.PathValue("id")
 	pass.Id = id
 
-	pass, err := model.UpdatePass(pass)
+	pass, err := db.UpdatePass(pass)
 	if err != nil {
 		log.Println(err)
 	}
@@ -153,9 +159,10 @@ func UpdatePass(w http.ResponseWriter, r *http.Request) error {
 }
 
 func DeletePass(w http.ResponseWriter, r *http.Request) error {
+	db := model.GetDBFromCtx(r)
 	id := r.PathValue("id")
 
-	err := model.DeletePass(id)
+	err := db.DeletePass(id)
 	if err != nil {
 		log.Println(err)
 		return APIError{

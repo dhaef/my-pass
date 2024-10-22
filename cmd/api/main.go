@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 
@@ -11,15 +12,19 @@ import (
 )
 
 func main() {
-	db.Connect()
-	db.SetupTablesAndUser()
+	conn, err := db.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.SetupTablesAndUser(conn)
 
 	jobsChan, resultsChan := jobs.Start(3)
 	s := http.Server{
 		Addr:    ":3000",
 		Handler: buildRoutes(),
 		BaseContext: func(l net.Listener) context.Context {
-			return context.WithValue(context.Background(), "jobsChan", jobsChan)
+			ctx := context.WithValue(context.Background(), "dbConn", conn)
+			return context.WithValue(ctx, "jobsChan", jobsChan)
 		},
 	}
 	go func() {
@@ -28,7 +33,7 @@ func main() {
 		}
 	}()
 
-	err := s.ListenAndServe()
+	err = s.ListenAndServe()
 	if err != nil {
 		fmt.Println(err)
 		jobs.Stop(jobsChan, resultsChan)

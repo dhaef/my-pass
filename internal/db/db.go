@@ -8,32 +8,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var (
-	db *sql.DB
-)
-
-func GetDB() *sql.DB {
-	return db
+func Connect() (*sql.DB, error) {
+	return sql.Open("postgres", "user=my-pass-go dbname=my-pass-go password=example host=localhost port=5432 sslmode=disable")
 }
 
-// DB can go into models and main but not controllers
-// models can go into controllers not main
-
-func Connect() {
-	var err error
-	db, err = sql.Open("postgres", "user=my-pass-go dbname=my-pass-go password=example host=localhost port=5432 sslmode=disable")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func SetupTablesAndUser() {
-	err := createUsersTable()
+func SetupTablesAndUser(db *sql.DB) {
+	err := createUsersTable(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = createSessionsTable()
+	err = createSessionsTable(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,23 +46,23 @@ func SetupTablesAndUser() {
 		log.Fatal(err)
 	}
 
-	err = createPassTable()
+	err = createPassTable(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = createTagsTable()
+	err = createTagsTable(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = createWebsitesTable()
+	err = createWebsitesTable(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func createUsersTable() error {
+func createUsersTable(db *sql.DB) error {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS users (
 		id uuid DEFAULT gen_random_uuid() UNIQUE,
 		email varchar(45) NOT NULL UNIQUE,
@@ -93,7 +78,7 @@ func createUsersTable() error {
 	return nil
 }
 
-func createSessionsTable() error {
+func createSessionsTable(db *sql.DB) error {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS sessions (
 		id uuid DEFAULT gen_random_uuid() UNIQUE,
 		userId uuid NOT NULL,
@@ -109,7 +94,7 @@ func createSessionsTable() error {
 	return nil
 }
 
-func createPassTable() error {
+func createPassTable(db *sql.DB) error {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS passes (
 		id uuid DEFAULT gen_random_uuid() UNIQUE,
 		userId uuid NOT NULL,
@@ -127,7 +112,7 @@ func createPassTable() error {
 	return nil
 }
 
-func createTagsTable() error {
+func createTagsTable(db *sql.DB) error {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS tags (
 		id uuid DEFAULT gen_random_uuid() UNIQUE,
 		passId uuid NOT NULL,
@@ -147,7 +132,7 @@ func createTagsTable() error {
 	return nil
 }
 
-func createWebsitesTable() error {
+func createWebsitesTable(db *sql.DB) error {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS websites (
 		id uuid DEFAULT gen_random_uuid() UNIQUE,
 		passId uuid NOT NULL,
