@@ -31,6 +31,7 @@ form.addEventListener('submit', async (e) => {
     const data = await response.json();
 
     // TODO: send sessionId to extension
+    document.location = '/passes';
   } catch (error) {
     console.log(error);
   }
