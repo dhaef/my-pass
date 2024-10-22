@@ -2,8 +2,6 @@ package model
 
 import (
 	"database/sql"
-
-	"github.com/dhaef/my-pass/internal/db"
 )
 
 type PassItem struct {
@@ -24,9 +22,9 @@ type Pass struct {
 	UpdatedAt sql.NullString `json"updatedAt"`
 }
 
-func CreatePass(pass *Pass) (*Pass, error) {
+func (db *Database) CreatePass(pass *Pass) (*Pass, error) {
 	createdAt := getNowTimeStamp()
-	if err := db.GetDB().QueryRow(
+	if err := db.conn.QueryRow(
 		"INSERT INTO passes(userId, name, username, password, createdAt) VALUES($1, $2, $3, $4, $5) RETURNING id",
 		pass.UserId,
 		pass.Name.String,
@@ -39,7 +37,7 @@ func CreatePass(pass *Pass) (*Pass, error) {
 	pass.CreatedAt = createdAt
 
 	for i, tag := range pass.Tags {
-		if err := db.GetDB().QueryRow(
+		if err := db.conn.QueryRow(
 			"INSERT INTO tags(id, passId, value, createdAt) VALUES($1, $2, $3, $4) RETURNING id",
 			tag.Id,
 			pass.Id,
@@ -51,7 +49,7 @@ func CreatePass(pass *Pass) (*Pass, error) {
 	}
 
 	for i, website := range pass.Websites {
-		if err := db.GetDB().QueryRow(
+		if err := db.conn.QueryRow(
 			"INSERT INTO websites(id, passId, value, createdAt) VALUES($1, $2, $3, $4) RETURNING id",
 			website.Id,
 			pass.Id,
@@ -65,9 +63,9 @@ func CreatePass(pass *Pass) (*Pass, error) {
 	return pass, nil
 }
 
-func UpdatePass(pass *Pass) (*Pass, error) {
+func (db *Database) UpdatePass(pass *Pass) (*Pass, error) {
 	updatedAt := getNowTimeStamp()
-	_, err := db.GetDB().Exec(
+	_, err := db.conn.Exec(
 		"UPDATE passes SET userId = $1, name = $2, username = $3, password = $4, updatedAt = $5 WHERE id = $6",
 		pass.UserId,
 		pass.Name.String,
@@ -84,7 +82,7 @@ func UpdatePass(pass *Pass) (*Pass, error) {
 		Valid:  true,
 	}
 
-	currentTags, err := getTagsByPassId(pass.Id)
+	currentTags, err := db.getTagsByPassId(pass.Id)
 	if err != nil {
 		return pass, err
 	}
@@ -92,7 +90,7 @@ func UpdatePass(pass *Pass) (*Pass, error) {
 	tagsToDelete := getPassItemsToDelete(currentTags, pass.Tags)
 
 	for _, tag := range tagsToDelete {
-		_, err := db.GetDB().Exec(
+		_, err := db.conn.Exec(
 			"DELETE FROM tags WHERE id = $1",
 			tag,
 		)
@@ -102,7 +100,7 @@ func UpdatePass(pass *Pass) (*Pass, error) {
 	}
 
 	for _, tag := range pass.Tags {
-		_, err := db.GetDB().Exec(
+		_, err := db.conn.Exec(
 			`INSERT INTO 
 			tags(id, passId, value, createdAt) 
 			VALUES($1, $2, $3, $4) 
@@ -118,7 +116,7 @@ func UpdatePass(pass *Pass) (*Pass, error) {
 		}
 	}
 
-	currentWebsites, err := getWebsitesByPassId(pass.Id)
+	currentWebsites, err := db.getWebsitesByPassId(pass.Id)
 	if err != nil {
 		return pass, err
 	}
@@ -126,7 +124,7 @@ func UpdatePass(pass *Pass) (*Pass, error) {
 	websitesToDelete := getPassItemsToDelete(currentWebsites, pass.Websites)
 
 	for _, website := range websitesToDelete {
-		_, err := db.GetDB().Exec(
+		_, err := db.conn.Exec(
 			"DELETE FROM websites WHERE id = $1",
 			website,
 		)
@@ -136,7 +134,7 @@ func UpdatePass(pass *Pass) (*Pass, error) {
 	}
 
 	for _, website := range pass.Websites {
-		_, err := db.GetDB().Exec(
+		_, err := db.conn.Exec(
 			`INSERT INTO 
 			websites(id, passId, value, createdAt) 
 			VALUES($1, $2, $3, $4) 
@@ -175,8 +173,8 @@ func getPassItemsToDelete(currentItems []PassItem, newItems []PassItem) []string
 	return passItemsToDelete
 }
 
-func getTagsByPassId(id string) ([]PassItem, error) {
-	rows, err := db.GetDB().Query(
+func (db *Database) getTagsByPassId(id string) ([]PassItem, error) {
+	rows, err := db.conn.Query(
 		"SELECT id, value FROM tags WHERE passId = $1",
 		id,
 	)
@@ -201,8 +199,8 @@ func getTagsByPassId(id string) ([]PassItem, error) {
 	return tags, nil
 }
 
-func getWebsitesByPassId(id string) ([]PassItem, error) {
-	rows, err := db.GetDB().Query(
+func (db *Database) getWebsitesByPassId(id string) ([]PassItem, error) {
+	rows, err := db.conn.Query(
 		"SELECT id, value FROM websites WHERE passId = $1",
 		id,
 	)
@@ -227,8 +225,8 @@ func getWebsitesByPassId(id string) ([]PassItem, error) {
 	return websites, nil
 }
 
-func GetPass(id string, userId string) (Pass, error) {
-	rows, err := db.GetDB().Query(
+func (db *Database) GetPass(id string, userId string) (Pass, error) {
+	rows, err := db.conn.Query(
 		`SELECT 
 		p.id, 
 		p.userId, 
@@ -305,8 +303,8 @@ func GetPass(id string, userId string) (Pass, error) {
 	return fullPass, nil
 }
 
-func GetPasses(userId string) ([]Pass, error) {
-	rows, err := db.GetDB().Query(
+func (db *Database) GetPasses(userId string) ([]Pass, error) {
+	rows, err := db.conn.Query(
 		"SELECT id, userId, name, username, password, createdAt FROM passes WHERE userId = $1",
 		userId,
 	)
@@ -337,8 +335,8 @@ func GetPasses(userId string) ([]Pass, error) {
 	return passes, nil
 }
 
-func DeletePass(id string) error {
-	_, err := db.GetDB().Exec(
+func (db *Database) DeletePass(id string) error {
+	_, err := db.conn.Exec(
 		`DELETE FROM passes WHERE id = $1`,
 		id,
 	)

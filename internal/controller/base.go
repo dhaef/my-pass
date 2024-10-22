@@ -112,7 +112,8 @@ func WithAuth(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		session, err := model.GetSession(cookie.Value)
+		db := model.GetDBFromCtx(r)
+		session, err := db.GetSession(cookie.Value)
 		if err != nil {
 			log.Println(err)
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -132,7 +133,7 @@ func WithAuth(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		err = model.UpdateUserSession(session.Id)
+		err = db.UpdateUserSession(session.Id)
 		if err != nil {
 			log.Println("failed to dump session expires time", err)
 		}

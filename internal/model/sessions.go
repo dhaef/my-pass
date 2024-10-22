@@ -3,8 +3,6 @@ package model
 import (
 	"database/sql"
 	"time"
-
-	"github.com/dhaef/my-pass/internal/db"
 )
 
 type Session struct {
@@ -15,10 +13,10 @@ type Session struct {
 	UpdatedAt sql.NullString
 }
 
-func GetSession(id string) (Session, error) {
+func (db *Database) GetSession(id string) (Session, error) {
 	var session Session
 
-	if err := db.GetDB().QueryRow(
+	if err := db.conn.QueryRow(
 		"SELECT id, userId, expiresAt, createdAt, updatedAt FROM sessions WHERE id = $1",
 		id,
 	).Scan(
@@ -33,10 +31,10 @@ func GetSession(id string) (Session, error) {
 	return session, nil
 }
 
-func GetSessionByUserId(userId string) (Session, error) {
+func (db *Database) GetSessionByUserId(userId string) (Session, error) {
 	var session Session
 
-	if err := db.GetDB().QueryRow(
+	if err := db.conn.QueryRow(
 		"SELECT id, userId, expiresAt, createdAt, updatedAt FROM sessions WHERE userId = $1",
 		userId,
 	).Scan(
@@ -55,10 +53,10 @@ func getExpiresAtTimeStamp() string {
 	return time.Now().Add(time.Minute * 10).Format(time.RFC3339)
 }
 
-func CreateUserSession(userId string) (string, error) {
+func (db *Database) CreateUserSession(userId string) (string, error) {
 	var id string
 
-	if err := db.GetDB().QueryRow(
+	if err := db.conn.QueryRow(
 		"INSERT INTO sessions(userId, expiresAt, createdAt) VALUES($1, $2, $3) RETURNING id",
 		userId,
 		getExpiresAtTimeStamp(),
@@ -69,8 +67,8 @@ func CreateUserSession(userId string) (string, error) {
 	return id, nil
 }
 
-func UpdateUserSession(id string) error {
-	_, err := db.GetDB().Exec(
+func (db *Database) UpdateUserSession(id string) error {
+	_, err := db.conn.Exec(
 		`UPDATE sessions SET expiresAt = $1, updatedAt = $2 WHERE id = $3`,
 		getExpiresAtTimeStamp(),
 		getNowTimeStamp(),
@@ -83,9 +81,9 @@ func UpdateUserSession(id string) error {
 	return nil
 }
 
-func InvalidateUserSession(id string) error {
+func (db *Database) InvalidateUserSession(id string) error {
 	now := getNowTimeStamp()
-	_, err := db.GetDB().Exec(
+	_, err := db.conn.Exec(
 		`UPDATE sessions SET expiresAt = $1, updatedAt = $1 WHERE id = $2`,
 		now,
 		id,

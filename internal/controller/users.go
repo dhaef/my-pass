@@ -7,8 +7,9 @@ import (
 	"github.com/dhaef/my-pass/internal/model"
 )
 
-func getUsers() ([]model.User, error) {
-	users, err := model.GetUsers()
+func getUsers(r *http.Request) ([]model.User, error) {
+	db := model.GetDBFromCtx(r)
+	users, err := db.GetUsers()
 	if err != nil {
 		return users, nil
 	}
@@ -17,7 +18,7 @@ func getUsers() ([]model.User, error) {
 }
 
 func UsersJson(w http.ResponseWriter, r *http.Request) error {
-	users, err := getUsers()
+	users, err := getUsers(r)
 	if err != nil {
 		return APIError{
 			Status:  http.StatusBadRequest,
@@ -30,7 +31,7 @@ func UsersJson(w http.ResponseWriter, r *http.Request) error {
 
 func UsersHtml(w http.ResponseWriter, r *http.Request) error {
 	fmt.Println("UserId: ", r.Context().Value(userIdKeyName))
-	users, err := getUsers()
+	users, err := getUsers(r)
 	if err != nil {
 		return APIError{
 			Status:  http.StatusBadRequest,
